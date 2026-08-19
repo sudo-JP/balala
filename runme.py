@@ -28,7 +28,7 @@ def main():
         with open(PROCESS_JSON, "w") as file:
             json.dump({}, file)
     else: 
-        run_process = lambda cmd: subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        run_process = lambda cmd: subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         serve_proc = run_process(["rojo", "serve"])
         sourcemap_proc = run_process(["rojo", "sourcemap", "--watch", "sourcemap.json"])
         

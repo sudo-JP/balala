@@ -1,7 +1,8 @@
-local Card = require(script.Parent.Card)
+local CardModule = require(script.Parent.Card)
 
-type Suit = Card.Suit
-type CardValue = Card.CardValue
+
+type Suit = typeof(CardModule.Suit)
+type CardValue = typeof(CardModule.CardValue)
 
 local StandardCard = {}
 StandardCard.__index = StandardCard

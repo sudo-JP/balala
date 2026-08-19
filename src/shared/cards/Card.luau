@@ -1,4 +1,5 @@
-local HandModule = require(script.Parent.Parent.deck.Hand)
+--!strict
+local HandModule = require("../deck/Hand")
 type Hand = HandModule.Hand
 
 type Suit = "Diamonds" | "Spades" | "Hearts" | "Clubs"
@@ -7,6 +8,7 @@ type Suit = "Diamonds" | "Spades" | "Hearts" | "Clubs"
 type CardValue = {
     suit: Suit,
     rank: number?,
+    display: string, 
 }
 
 export type Evaluable = {

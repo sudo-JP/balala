@@ -1,4 +1,5 @@
-local Card = require(script.Parent.Parent.cards.Card)
+--!strict
+local Card = require("../cards/Card")
 type Suit = "Diamonds" | "Spades" | "Hearts" | "Clubs"
 
 local Deck = {}
@@ -18,9 +19,44 @@ function Deck.new()
         "Clumbs"
     }
 
+    local rank_map = {
+        [13] = 11,
+        [12] = 10,
+        [11] = 10,
+        [10] = 10,
+    }
+    
+    local display_map = {
+        [13] = "A",
+        [12] = "Q",
+        [11] = "K",
+        [10] = "J",
+    }
+
+    for i = 2, 9 do 
+        display_map[i] = tostring(i)
+        rank_map[i] = i
+    end 
+
+
     local i = 1
     for _, value in ipairs(suit) do
-        suit[i] = value
+
+        for j = 2, 13 do 
+            local rank = rank_map[j]
+
+            local display = display_map[j]
+
+            local card = Card.CardValue {
+                rank = rank,
+                display = display, 
+                suit = value, 
+            }
+            self.cards[i] = card 
+                
+        end
+
+        i += 1
     end
 
 end 
