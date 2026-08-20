@@ -23,7 +23,7 @@ export type Buyable = {
 
 -- Multiplier 
 export type Consumable = {
-    consume: (self: Consumable, current_point: number) -> number,
+    consume: (self: Consumable, currentPoint: number) -> number,
 }
 
 -- Playable on deck

@@ -5,11 +5,20 @@ type Suit = "Diamonds" | "Spades" | "Hearts" | "Clubs"
 local Deck = {}
 Deck.__index = Deck
 
+function fisherYates<T>(array: {T})
+    local rng = Random.new()
+    for i = #array, 2, -1 do
+        local j = rng:NextInteger(1, i)
+        array[i], array[j] = array[j], array[i]
+    end
+end 
+
 function Deck.new()
     local self = setmetatable({}, Deck)
 
-    local numbers_of_cards = 52
-    self.cards = table.create(numbers_of_cards)
+    self.numberOfCards = 52
+    self.currentCard = self.numberOfCards
+    self.cards = table.create(self.numberOfCards)
 
 
     local suit = {
@@ -19,44 +28,54 @@ function Deck.new()
         "Clumbs"
     }
 
-    local rank_map = {
+    local rankMap = {
         [13] = 11,
         [12] = 10,
         [11] = 10,
         [10] = 10,
     }
     
-    local display_map = {
+    local displayMap = {
         [13] = "A",
-        [12] = "Q",
-        [11] = "K",
+        [12] = "K",
+        [11] = "Q",
         [10] = "J",
     }
 
     for i = 2, 9 do 
-        display_map[i] = tostring(i)
-        rank_map[i] = i
+        displayMap[i] = tostring(i)
+        rankMap[i] = i
     end 
 
 
-    local i = 1
+    -- Generate deck 
     for _, value in ipairs(suit) do
 
         for j = 2, 13 do 
-            local rank = rank_map[j]
+            local rank = rankMap[j]
 
-            local display = display_map[j]
+            local display = displayMap[j]
 
-            local card = Card.CardValue {
-                rank = rank,
-                display = display, 
-                suit = value, 
-            }
-            self.cards[i] = card 
+            local card = Card.StandardCard.new(
+                value, rank, display
+            )
+            
+            table.insert(self.cards, card)
                 
         end
-
-        i += 1
     end
 
+    fisherYates(self.cards)
+end
+
+
+function Deck:drawCard()
+    if self.currentCard == 0 then
+        fisherYates(self.cards)
+        self.currentCard = self.numberOfCards
+    end 
+    local card = self.cards[self.currentCard]
+    self.currentCard -= 1 
+    return card 
 end 
+
