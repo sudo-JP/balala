@@ -65,48 +65,93 @@ function Hand:pokerRankings()
 end 
 
 -- High card
-function Hand:CheckHighCard()
+function Hand:checkHighCard()
     if #self.selectedHand == 1 then 
         return true
     end 
     return false
 end
 
--- One pair
-function Hand:CheckOnePair()
-    if #self.selectedHand == 2 
-        and self.selectedHand[1].rank == self.selectedHand[2].rank
-    then return true
+function Hand:buildAndSortRankMap()
+    local map = {}
+    local keys = {}
+
+    -- Populate map 
+    for _, value in ipairs(self.selectedHand) do 
+        -- value.rank 
+        map[value.rank] = (map[value.rank] or 0) + 1
+        table.insert(keys, value.rank)
     end
-    return false
+
+    -- Sort 
+    table.sort(keys, function(a, b)
+        return map[a] > map[b]
+    end)
+    return {map = map, keys = keys}
 end 
 
--- Helper for pairing
+-- Helper for same rank
 function Hand:sameRank(n)
-    if #self.selectedHand <= n then 
+    if n <= 0 or #self.selectedHand < n then 
         return false
     end
 
-    local flag = false
-    local count = 0 
-    for _, value in ipairs(self.selectedHand) do 
+    local mapAndKeys: {map: {[number]: number}, keys: {number}} = self:buildAndSortRankMap()
+    local map = mapAndKeys.map
+    local keys = mapAndKeys.keys
 
-    end
+    return map[keys[1]] >= n
 end 
 
--- Two pair
-function Hand:CheckTwoPair()
-    if #self.selectedHand == 2 then 
-        local card1 = self.selectedHand[1].rank 
-        local card2 = self.selectedHand[2].rank
-        if card1.rank == card2.rank 
-            and card1.suit == card2.suit 
-        then return true end
+-- One pair
+function Hand:checkOnePair()
+    return self:sameRank(2)
+end 
+
+-- A pair with same rank and 
+-- another pair of same rank. 
+-- They should diff in rank
+function Hand:checkTwoPair()
+    if #self.selectedHand < 4 then 
+        return false
     end
-    return false
+
+    local mapAndKeys: {map: {[number]: number}, keys: {number}} = self:buildAndSortRankMap()
+    local map = mapAndKeys.map
+    local keys = mapAndKeys.keys
+
+    if #keys < 2 then return false end
+
+    return map[keys[1]] == 2 and map[keys[2]] == 2
 end
 
-function Hand:ThreeOfAKind()
+function Hand:checkThreeOfAKind()
+    return self:sameRank(3)
 end 
+
+function Hand:checkStraight()
+    -- TODO
+end
+
+function Hand:checkFlush()
+    -- TODO
+end
+
+function Hand:checkFullHouse()
+    -- TODO
+end
+
+function Hand:checkFourOfAKind()
+    return self:sameRank(4)
+end
+
+function Hand:checkStraightFlush()
+    -- TODO
+end
+
+function Hand:checkRoyalFlush()
+    -- TODO
+end
+
 
 return Hand
