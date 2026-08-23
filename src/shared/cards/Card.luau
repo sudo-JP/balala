@@ -7,7 +7,8 @@ type Suit = "Diamonds" | "Spades" | "Hearts" | "Clubs"
 
 type CardValue = {
     suit: Suit,
-    rank: number?,
+    rank: number,    -- For hand detection  (J: 11, K: 12, etc)
+    points: number,  -- Balatro point style (J: 10, K: 10, etc)
     display: string, 
 }
 

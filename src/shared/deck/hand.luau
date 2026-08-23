@@ -66,12 +66,14 @@ end
 
 -- High card
 function Hand:checkHighCard()
-    if #self.selectedHand == 1 then 
+    if #self.selectedHand > 0 then 
         return true
     end 
     return false
 end
 
+-- Helper that creates a map contains the count 
+-- of rank appearance, and its adjacent sorted keys array
 function Hand:buildAndSortRankMap()
     local map = {}
     local keys = {}
@@ -130,15 +132,52 @@ function Hand:checkThreeOfAKind()
 end 
 
 function Hand:checkStraight()
-    -- TODO
+    if #self.selectedHand ~= 5 then
+        return false
+    end 
+    -- Sort
+    table.sort(self.selectedHand, function(a, b)
+        return a.rank > b.rank
+    end)
+
+    -- If difference from prev rank is not 1, not straight
+    local prevRank = self.selectedHand[1].rank - 1
+    for _, value in ipairs(self.selectedHand) do
+        if value.rank - prevRank ~= 1 then
+            return false
+        end
+        prevRank = value.rank
+    end
+
+    return true
 end
 
 function Hand:checkFlush()
-    -- TODO
+    if #self.selectedHand ~= 5 then
+        return false
+    end
+
+    local suit = self.selectedHand[1].suit
+    for _, value in ipairs(self.selectedHand) do
+        if value.suit ~= suit then
+            return false
+        end
+    end
+    return true
 end
 
 function Hand:checkFullHouse()
-    -- TODO
+    if #self.selectedHand ~= 5 then
+        return false
+    end
+
+    local mapAndKeys: {map: {[number]: number}, keys: {number}} = self:buildAndSortRankMap()
+    local map = mapAndKeys.map
+    local keys = mapAndKeys.keys
+
+    if #keys < 2 then return false end
+
+    return map[keys[1]] == 3 and map[keys[2]] == 2
 end
 
 function Hand:checkFourOfAKind()
@@ -146,11 +185,11 @@ function Hand:checkFourOfAKind()
 end
 
 function Hand:checkStraightFlush()
-    -- TODO
+    return self:checkStraight() and self:checkFlush()
 end
 
 function Hand:checkRoyalFlush()
-    -- TODO
+    return self:checkStraight() and self.selectedHand[1].rank == 13 and self:checkFlush()
 end
 
 

@@ -28,7 +28,7 @@ function Deck.new()
         "Clumbs"
     }
 
-    local rankMap = {
+    local pointsMap = {
         [13] = 11,
         [12] = 10,
         [11] = 10,
@@ -44,7 +44,7 @@ function Deck.new()
 
     for i = 2, 9 do 
         displayMap[i] = tostring(i)
-        rankMap[i] = i
+        pointsMap[i] = i
     end 
 
 
@@ -52,12 +52,11 @@ function Deck.new()
     for _, value in ipairs(suit) do
 
         for j = 2, 13 do 
-            local rank = rankMap[j]
-
+            local points = pointsMap[j]
             local display = displayMap[j]
 
             local card = Card.StandardCard.new(
-                value, rank, display
+                value, points, j, display
             )
             
             table.insert(self.cards, card)
