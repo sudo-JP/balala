@@ -9,23 +9,25 @@ function PlayerGameState.new(builder)
     self.discardCounter = builder.discardCounter
 end
 
-local PlayerGameStyleBuilder = {}
-PlayerGameStyleBuilder.__index = PlayerGameStyleBuilder
+local PlayerStateBuilder = {}
+PlayerStateBuilder.__index = PlayerStateBuilder
 
-function PlayerGameStyleBuilder.new(name: string)
-    local self = setmetatable({}, PlayerGameStyleBuilder)
+function PlayerStateBuilder.new(player)
+    local self = setmetatable({}, PlayerStateBuilder)
     self.currentCredit = 0
     self.handSize = 5
+    self.deckType = player:getDeckType()
+    return self
 end
 
-function PlayerGameStyleBuilder:setDiscardCount(n)
+function PlayerStateBuilder:setDiscardCount(n)
     self.cardCounter = n
 end
 
-function PlayerGameStyleBuilder:setHandSize(n)
+function PlayerStateBuilder:setHandSize(n)
     self.handSize = n
 end
 
-function PlayerGameStyleBuilder:build()
-    return PlayerGameStyleBuilder.new(self)
+function PlayerStateBuilder:build()
+    return PlayerStateBuilder.new(self)
 end
