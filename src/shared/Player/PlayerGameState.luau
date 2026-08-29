@@ -1,6 +1,23 @@
 local PlayerGameState = {}
 PlayerGameState.__index = PlayerGameState
 
+type PlayerCardData = {
+    hand: number,
+    discard: number, 
+    handSize: number,
+    deckType: any,
+}
+
+type PlayerInventoryData = {
+    jokerSlotsSize: number,
+    capital: number,
+    consumableSlotsSize: number,
+    vouchers: {any},
+    jokers: {any},
+    consumeable: {any},
+}
+
+
 function PlayerGameState.new(builder)
     local self = setmetatable({}, PlayerGameState)
     self.hand = builder.hand 
@@ -18,32 +35,43 @@ PlayerStateBuilder.__index = PlayerStateBuilder
 -- Default goes here
 function PlayerStateBuilder.new(player)
     local self = setmetatable({}, PlayerStateBuilder)
-    self.hand = 4
-    self.discard = 3
-    self.handSize = 8
-    self.capital = 4
-    self.jokerSlotsSize = 5
-    self.consumableSlotsSize = 2
-    self.deckType = player:getDeckType()
+    local playerCardData: PlayerCardData = {
+        hand = 4,
+        discard = 3,        -- Note: Missing required fields will cause a type error
+        handSize = 8,
+        deckType = player:getDeckType(),
+    }
+    self.playerCardData = playerCardData
+
+    local playerInventoryData: PlayerInventoryData = {
+        jokerSlotsSize = 5,
+        capital = 4,
+        consumableSlotsSize = 2,
+        vouchers = {},
+        jokers = {},
+        consumeable = {},
+    }
+    self.playerInventoryData = playerInventoryData
+
     self.deckConfigured = false
     return self
 end
 
 function PlayerStateBuilder:useRedDeck()
     assert(not self.deckConfigured, "deck already configured")
-    self.discard += 1
+    self.playerCardData.discard += 1
     self.deckConfigured = true
 end
 
 function PlayerStateBuilder:useBlueDeck()
     assert(not self.deckConfigured, "deck already configured")
-    self.hand += 1
+    self.playerCardData.hand += 1
     self.deckConfigured = true
 end
 
 function PlayerStateBuilder:useYellowDeck()
     assert(not self.deckConfigured, "deck already configured")
-    self.capital += 10
+    self.playerInventoryData.capital += 10
     self.deckConfigured = true
 end
 
@@ -55,15 +83,15 @@ end
 
 function PlayerStateBuilder:useBlackDeck()
     assert(not self.deckConfigured, "deck already configured")
-    self.jokerSlotsSize += 1
-    self.hand -= 1
+    self.playerInventoryData.jokerSlotsSize += 10
+    self.playerCardData.hand -= 1
     self.deckConfigured = true
 end
 
 function PlayerStateBuilder:usePaintedDeck()
     assert(not self.deckConfigured, "deck already configured")
-    self.handSize += 2;
-    self.jokerSlotsSize -= 1
+    self.playerCardData.handSize += 2
+    self.playerInventoryData.jokerSlotsSize -= 1
     self.deckConfigured = true
 end
 
