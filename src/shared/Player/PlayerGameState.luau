@@ -37,7 +37,7 @@ function PlayerStateBuilder.new(player)
     local self = setmetatable({}, PlayerStateBuilder)
     local playerCardData: PlayerCardData = {
         hand = 4,
-        discard = 3,        -- Note: Missing required fields will cause a type error
+        discard = 3,       
         handSize = 8,
         deckType = player:getDeckType(),
     }

@@ -2,7 +2,7 @@
 local HandModule = require("../deck/Hand")
 type Hand = HandModule.Hand
 
-type Suit = "Diamonds" | "Spades" | "Hearts" | "Clubs"
+type Suit = "Diamond" | "Spade" | "Heart" | "Club"
 
 
 type CardValue = {
@@ -19,13 +19,17 @@ export type Evaluable = {
 -- Buyable from shop
 export type Buyable = {
     price: number,
-    buy: (self: Buyable) -> (),
 }
 
 -- Multiplier 
 export type Consumable = {
     consume: (self: Consumable, currentPoint: number) -> number,
 }
+
+export type Passive = {
+    onHandEval: (self: Passive, hand: Hand, score: number) -> number,
+}
+
 
 -- Playable on deck
 export type Playable = {

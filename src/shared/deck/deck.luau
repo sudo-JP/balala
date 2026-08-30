@@ -22,10 +22,10 @@ function Deck.new()
 
 
     local suit = {
-        "Diamonds",
-        "Spades", 
-        "Hearts",
-        "Clumbs"
+        "Diamond",
+        "Spade", 
+        "Heart",
+        "Clumb"
     }
 
     local pointsMap = {

@@ -37,6 +37,10 @@ function Hand:DrawCardFromDeck(deck: Deck)
     table.insert(self.currentHand, deck:DrawCard())
 end 
 
+function Hand:getSelectedHand()
+    return self.selectedHand
+end
+
 function Hand:SelectCard(cardIndex: number) 
     local card = table.remove(self.currentHand, cardIndex)
     if card == nil then 
