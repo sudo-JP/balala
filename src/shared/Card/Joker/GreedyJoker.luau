@@ -2,7 +2,7 @@ local GreedyJoker = {}
 GreedyJoker.__index = GreedyJoker
 
 function GreedyJoker.new()
-    return setmetatable({ price = 5 }, GreedyJoker)
+    return setmetatable({ price = 5, rarity = "Common" }, GreedyJoker)
 end
 
 function GreedyJoker:onHandEval(hand, score)

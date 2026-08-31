@@ -2,7 +2,7 @@ local Joker = {}
 Joker.__index = Joker
 
 function Joker.new()
-    return setmetatable({ price = 2 }, Joker)
+    return setmetatable({ price = 2, rarity = "Common" }, Joker)
 end
 
 function Joker:onHandEval(hand, score)

@@ -3,6 +3,7 @@ local HandModule = require("../deck/Hand")
 type Hand = HandModule.Hand
 
 type Suit = "Diamond" | "Spade" | "Heart" | "Club"
+type Rarity = "Common" | "Uncommon" | "Rare" | "Legendary"
 
 
 type CardValue = {
@@ -19,6 +20,7 @@ export type Evaluable = {
 -- Buyable from shop
 export type Buyable = {
     price: number,
+    rarity: Rarity,
 }
 
 -- Multiplier 
