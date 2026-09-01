@@ -6,7 +6,7 @@ function JollyJoker.new()
 end
 
 function JollyJoker:onHandEval(hand, score)
-    if hand:checkPair() then
+    if hand:checkOnePair() then
         return score + 8
     end
     return score

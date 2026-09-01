@@ -1,80 +1,89 @@
 --!strict
-local Card = require("../cards/Card")
-type Suit = "Diamonds" | "Spades" | "Hearts" | "Clubs"
+local Card = require("../Card")
+local CardTypes = require("../Card/Types")
+
+type Suit = CardTypes.Suit
+type CardValue = CardTypes.CardValue
 
 local Deck = {}
 Deck.__index = Deck
 
-function fisherYates<T>(array: {T})
-    local rng = Random.new()
+export type Deck = {
+    numberOfCards: number,
+    currentCard: number,
+    cards: {CardValue},
+    drawCard: (self: Deck) -> CardValue,
+}
+
+local function fisherYates<T>(array: {T})
     for i = #array, 2, -1 do
-        local j = rng:NextInteger(1, i)
+        local j = math.random(1, i)
         array[i], array[j] = array[j], array[i]
     end
-end 
+end
 
-function Deck.new()
-    local self = setmetatable({}, Deck)
+function Deck.new(): Deck
+    local self: Deck = setmetatable({
+        numberOfCards = 52,
+        currentCard = 52,
+        cards = table.create(52) :: {CardValue},
+    }, Deck) :: Deck
 
-    self.numberOfCards = 52
-    self.currentCard = self.numberOfCards
-    self.cards = table.create(self.numberOfCards)
-
-
-    local suit = {
+    local suits: {Suit} = {
         "Diamond",
-        "Spade", 
+        "Spade",
         "Heart",
-        "Clumb"
+        "Club",
     }
 
-    local pointsMap = {
+    local pointsMap: {[number]: number} = {
         [13] = 11,
         [12] = 10,
         [11] = 10,
         [10] = 10,
     }
-    
-    local displayMap = {
+
+    local displayMap: {[number]: string} = {
         [13] = "A",
         [12] = "K",
         [11] = "Q",
         [10] = "J",
     }
 
-    for i = 2, 9 do 
+    for i = 2, 9 do
         displayMap[i] = tostring(i)
         pointsMap[i] = i
-    end 
+    end
 
-
-    -- Generate deck 
-    for _, value in ipairs(suit) do
-
-        for j = 2, 13 do 
-            local points = pointsMap[j]
-            local display = displayMap[j]
+    for _, suit in ipairs(suits) do
+        for rank = 2, 13 do
+            local points = pointsMap[rank]
+            local display = displayMap[rank]
 
             local card = Card.StandardCard.new(
-                value, points, j, display
+                suit,
+                rank,
+                points,
+                display
             )
-            
+
             table.insert(self.cards, card)
-                
         end
     end
 
     fisherYates(self.cards)
+    return self
 end
 
-
-function Deck:drawCard()
+function Deck.drawCard(self: Deck): CardValue
     if self.currentCard == 0 then
         fisherYates(self.cards)
         self.currentCard = self.numberOfCards
-    end 
-    local card = self.cards[self.currentCard]
-    self.currentCard -= 1 
-    return card 
-end 
+    end
 
+    local card = self.cards[self.currentCard]
+    self.currentCard -= 1
+    return card
+end
+
+return Deck

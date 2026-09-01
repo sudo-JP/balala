@@ -1,7 +1,13 @@
 --!strict
+local CardModule = require("../Card/Types")
+
+type CardValue = CardModule.CardValue
+type DeckLike = {
+    drawCard: (self: DeckLike) -> CardValue,
+}
+
 local Hand = {}
 Hand.__index = Hand
-export type Hand = typeof(Hand) 
 
 local PokerHandRankings = table.freeze({
     HighCard = "HighCard",
@@ -16,7 +22,7 @@ local PokerHandRankings = table.freeze({
     RoyalFlush = "RoyalFlush",
 })
 
-type PokerHandRankings = typeof(PokerHandRankings.HighCard) 
+type PokerHandRanking = typeof(PokerHandRankings.HighCard)
     | typeof(PokerHandRankings.OnePair)
     | typeof(PokerHandRankings.TwoPair)
     | typeof(PokerHandRankings.ThreeOfAKind)
@@ -27,136 +33,158 @@ type PokerHandRankings = typeof(PokerHandRankings.HighCard)
     | typeof(PokerHandRankings.StraightFlush)
     | typeof(PokerHandRankings.RoyalFlush)
 
-function Hand.new() 
-    local self = setmetatable({}, Hand)
-    self.currentHand = {}
-    self.selectedHand = {}
-end 
+export type Hand = {
+    currentHand: {CardValue},
+    selectedHand: {CardValue},
+    DrawCardFromDeck: (self: Hand, deck: DeckLike) -> (),
+    getSelectedHand: (self: Hand) -> {CardValue},
+    SelectCard: (self: Hand, cardIndex: number) -> (),
+    pokerRankings: (self: Hand) -> PokerHandRanking?,
+    checkHighCard: (self: Hand) -> boolean,
+    buildAndSortRankMap: (self: Hand) -> {map: {[number]: number}, keys: {number}},
+    sameRank: (self: Hand, count: number) -> boolean,
+    checkOnePair: (self: Hand) -> boolean,
+    checkTwoPair: (self: Hand) -> boolean,
+    checkThreeOfAKind: (self: Hand) -> boolean,
+    checkStraight: (self: Hand) -> boolean,
+    checkFlush: (self: Hand) -> boolean,
+    checkFullHouse: (self: Hand) -> boolean,
+    checkFourOfAKind: (self: Hand) -> boolean,
+    checkStraightFlush: (self: Hand) -> boolean,
+    checkRoyalFlush: (self: Hand) -> boolean,
+}
 
-function Hand:DrawCardFromDeck(deck: Deck)
-    table.insert(self.currentHand, deck:DrawCard())
-end 
+function Hand.new(): Hand
+    return setmetatable({
+        currentHand = {},
+        selectedHand = {},
+    }, Hand) :: Hand
+end
 
-function Hand:getSelectedHand()
+function Hand.DrawCardFromDeck(self: Hand, deck: DeckLike)
+    table.insert(self.currentHand, deck:drawCard())
+end
+
+function Hand.getSelectedHand(self: Hand): {CardValue}
     return self.selectedHand
 end
 
-function Hand:SelectCard(cardIndex: number) 
+function Hand.SelectCard(self: Hand, cardIndex: number)
     local card = table.remove(self.currentHand, cardIndex)
-    if card == nil then 
-        return 
-    end 
+    if card == nil then
+        return
+    end
 
     table.insert(self.selectedHand, card)
     self:pokerRankings()
 end
 
--- Helper for nicer index
-local function addCheck(func, rank)
-    return { func = func, rank = rank }
+function Hand.pokerRankings(self: Hand): PokerHandRanking?
+    if self:checkRoyalFlush() then
+        return PokerHandRankings.RoyalFlush
+    elseif self:checkStraightFlush() then
+        return PokerHandRankings.StraightFlush
+    elseif self:checkFourOfAKind() then
+        return PokerHandRankings.FourOfAKind
+    elseif self:checkFullHouse() then
+        return PokerHandRankings.FullHouse
+    elseif self:checkFlush() then
+        return PokerHandRankings.Flush
+    elseif self:checkStraight() then
+        return PokerHandRankings.Straight
+    elseif self:checkThreeOfAKind() then
+        return PokerHandRankings.ThreeOfAKind
+    elseif self:checkTwoPair() then
+        return PokerHandRankings.TwoPair
+    elseif self:checkOnePair() then
+        return PokerHandRankings.OnePair
+    elseif self:checkHighCard() then
+        return PokerHandRankings.HighCard
+    end
+
+    return nil
 end
 
-function Hand:pokerRankings()
-    local checks = {
-        addCheck(self.CheckHighCard, PokerHandRankings.HighCard)
-
-    }
-
-    for _, entry in ipairs(checks) do
-        if entry[1](self) then return entry[2] end
-    end 
-    return ""
-end 
-
--- High card
-function Hand:checkHighCard()
-    if #self.selectedHand > 0 then 
-        return true
-    end 
-    return false
+function Hand.checkHighCard(self: Hand): boolean
+    return #self.selectedHand > 0
 end
 
--- Helper that creates a map contains the count 
--- of rank appearance, and its adjacent sorted keys array
-function Hand:buildAndSortRankMap()
-    local map = {}
-    local keys = {}
+function Hand.buildAndSortRankMap(self: Hand): {map: {[number]: number}, keys: {number}}
+    local map: {[number]: number} = {}
+    local keys: {number} = {}
 
-    -- Populate map 
-    for _, value in ipairs(self.selectedHand) do 
-        -- value.rank 
+    for _, value in ipairs(self.selectedHand) do
+        if map[value.rank] == nil then
+            table.insert(keys, value.rank)
+        end
         map[value.rank] = (map[value.rank] or 0) + 1
-        table.insert(keys, value.rank)
     end
 
-    -- Sort 
     table.sort(keys, function(a, b)
-        return map[a] > map[b]
+        local countA = map[a]
+        local countB = map[b]
+        if countA == countB then
+            return a > b
+        end
+        return countA > countB
     end)
-    return {map = map, keys = keys}
-end 
 
--- Helper for same rank
-function Hand:sameRank(n)
-    if n <= 0 or #self.selectedHand < n then 
-        return false
-    end
-
-    local mapAndKeys: {map: {[number]: number}, keys: {number}} = self:buildAndSortRankMap()
-    local map = mapAndKeys.map
-    local keys = mapAndKeys.keys
-
-    return map[keys[1]] >= n
-end 
-
--- One pair
-function Hand:checkOnePair()
-    return self:sameRank(2)
-end 
-
--- A pair with same rank and 
--- another pair of same rank. 
--- They should diff in rank
-function Hand:checkTwoPair()
-    if #self.selectedHand < 4 then 
-        return false
-    end
-
-    local mapAndKeys: {map: {[number]: number}, keys: {number}} = self:buildAndSortRankMap()
-    local map = mapAndKeys.map
-    local keys = mapAndKeys.keys
-
-    if #keys < 2 then return false end
-
-    return map[keys[1]] == 2 and map[keys[2]] == 2
+    return { map = map, keys = keys }
 end
 
-function Hand:checkThreeOfAKind()
-    return self:sameRank(3)
-end 
+function Hand.sameRank(self: Hand, count: number): boolean
+    if count <= 0 or #self.selectedHand < count then
+        return false
+    end
 
-function Hand:checkStraight()
+    local mapAndKeys = self:buildAndSortRankMap()
+    local map = mapAndKeys.map
+    local keys = mapAndKeys.keys
+
+    return keys[1] ~= nil and map[keys[1]] >= count
+end
+
+function Hand.checkOnePair(self: Hand): boolean
+    return self:sameRank(2)
+end
+
+function Hand.checkTwoPair(self: Hand): boolean
+    if #self.selectedHand < 4 then
+        return false
+    end
+
+    local mapAndKeys = self:buildAndSortRankMap()
+    local map = mapAndKeys.map
+    local keys = mapAndKeys.keys
+
+    return #keys >= 2 and map[keys[1]] == 2 and map[keys[2]] == 2
+end
+
+function Hand.checkThreeOfAKind(self: Hand): boolean
+    return self:sameRank(3)
+end
+
+function Hand.checkStraight(self: Hand): boolean
     if #self.selectedHand ~= 5 then
         return false
-    end 
-    -- Sort
-    table.sort(self.selectedHand, function(a, b)
-        return a.rank > b.rank
-    end)
+    end
 
-    -- If difference from prev rank is not 1, not straight
-    local prevRank = self.selectedHand[1].rank - 1
-    for _, value in ipairs(self.selectedHand) do
-        if value.rank - prevRank ~= 1 then
+    local ranks: {number} = {}
+    for _, card in ipairs(self.selectedHand) do
+        table.insert(ranks, card.rank)
+    end
+    table.sort(ranks)
+
+    for index = 2, #ranks do
+        if ranks[index] ~= ranks[index - 1] + 1 then
             return false
         end
-        prevRank = value.rank
     end
 
     return true
 end
 
-function Hand:checkFlush()
+function Hand.checkFlush(self: Hand): boolean
     if #self.selectedHand ~= 5 then
         return false
     end
@@ -170,31 +198,28 @@ function Hand:checkFlush()
     return true
 end
 
-function Hand:checkFullHouse()
+function Hand.checkFullHouse(self: Hand): boolean
     if #self.selectedHand ~= 5 then
         return false
     end
 
-    local mapAndKeys: {map: {[number]: number}, keys: {number}} = self:buildAndSortRankMap()
+    local mapAndKeys = self:buildAndSortRankMap()
     local map = mapAndKeys.map
     local keys = mapAndKeys.keys
 
-    if #keys < 2 then return false end
-
-    return map[keys[1]] == 3 and map[keys[2]] == 2
+    return #keys == 2 and map[keys[1]] == 3 and map[keys[2]] == 2
 end
 
-function Hand:checkFourOfAKind()
+function Hand.checkFourOfAKind(self: Hand): boolean
     return self:sameRank(4)
 end
 
-function Hand:checkStraightFlush()
+function Hand.checkStraightFlush(self: Hand): boolean
     return self:checkStraight() and self:checkFlush()
 end
 
-function Hand:checkRoyalFlush()
+function Hand.checkRoyalFlush(self: Hand): boolean
     return self:checkStraight() and self.selectedHand[1].rank == 13 and self:checkFlush()
 end
-
 
 return Hand

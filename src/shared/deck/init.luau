@@ -1,7 +1,11 @@
 --!strict
-local HandModule = require(script.Hand)
+local Deck = require("@self/deck")
+local Hand = require("@self/hand")
 
-export type Hand = HandModule.Hand
+export type Deck = Deck.Deck
+export type Hand = Hand.Hand
 
-return HandModule
-
+return {
+    Deck = Deck,
+    Hand = Hand,
+}

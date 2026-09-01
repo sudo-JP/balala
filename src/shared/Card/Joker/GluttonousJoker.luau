@@ -8,7 +8,7 @@ end
 function GluttonousJoker:onHandEval(hand, score)
     local cards = hand:getSelectedHand()
     for _, val in ipairs(cards) do
-        if val.suit == "Spade" then
+        if val.suit == "Club" then
             score += 3
         end
     end

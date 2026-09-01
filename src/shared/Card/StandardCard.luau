@@ -1,16 +1,18 @@
-local CardModule = require(script.Parent.Card)
+--!strict
+local CardModule = require("./Types")
 
-
-type Suit = typeof(CardModule.Suit)
-type CardValue = typeof(CardModule.CardValue)
+type Suit = CardModule.Suit
+type CardValue = CardModule.CardValue
 
 local StandardCard = {}
 StandardCard.__index = StandardCard
 
-function StandardCard.new(suit: Suit, rank: number): CardValue
+function StandardCard.new(suit: Suit, rank: number, points: number, display: string): CardValue
     return setmetatable({
         suit = suit,
         rank = rank,
+        points = points,
+        display = display,
     }, StandardCard)
 end
 
