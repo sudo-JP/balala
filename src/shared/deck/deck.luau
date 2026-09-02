@@ -1,6 +1,7 @@
 --!strict
 local Card = require("../Card")
 local CardTypes = require("../Card/Types")
+local inplaceRandomizeArray = require("../Utils")
 
 type Suit = CardTypes.Suit
 type CardValue = CardTypes.CardValue
@@ -14,13 +15,6 @@ export type Deck = {
     cards: {CardValue},
     drawCard: (self: Deck) -> CardValue,
 }
-
-local function fisherYates<T>(array: {T})
-    for i = #array, 2, -1 do
-        local j = math.random(1, i)
-        array[i], array[j] = array[j], array[i]
-    end
-end
 
 function Deck.new(): Deck
     local self: Deck = setmetatable({
@@ -71,7 +65,7 @@ function Deck.new(): Deck
         end
     end
 
-    fisherYates(self.cards)
+    inplaceRandomizeArray(self.cards)
     return self
 end
 
