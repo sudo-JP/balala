@@ -9,6 +9,10 @@ type DeckLike = {
 local Hand = {}
 Hand.__index = Hand
 
+type HandResult = {
+    cards: {CardValue},
+}
+
 local PokerHandRankings = table.freeze({
     HighCard = "HighCard",
     OnePair = "OnePair",
@@ -105,8 +109,17 @@ function Hand.pokerRankings(self: Hand): PokerHandRanking?
     return nil
 end
 
-function Hand.checkHighCard(self: Hand): boolean
-    return #self.selectedHand > 0
+function Hand.checkHighCard(self: Hand): HandResult?
+    if #self.selectedHand == 0 then 
+        return nil 
+    end
+    local maxPointCard = self.selectedHand[1]
+    for _, card in ipairs(self.selectedHand) do
+        if card.points > maxPointCard.points then
+            maxPointCard = card
+        end
+    end
+    return {cards = {maxPointCard}}
 end
 
 function Hand.buildAndSortRankMap(self: Hand): {map: {[number]: number}, keys: {number}}
