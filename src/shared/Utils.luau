@@ -39,5 +39,20 @@ function higherOrderFunctions.arraySlice<T>(array: {T}, startIndex: number, endI
     return sliced
 end
 
+function higherOrderFunctions.arrayLeftFold<T, U>(array: {T}, acc: U, lambda: (U, T) -> U): U
+    for _, value in ipairs(array) do
+        acc = lambda(acc, value)
+    end
+    return acc
+end
+
+function higherOrderFunctions.arrayHasElement<T>(array: {T}, lambda: (T) -> boolean): boolean
+    for _, value in ipairs(array) do
+        if lambda(value) then
+            return true
+        end
+    end
+    return false
+end
 
 return higherOrderFunctions

@@ -1,5 +1,6 @@
 --!strict
 local CardModule = require("../Card/Types")
+local HighOrderFunctionsModule = require("../Utils")
 
 type CardValue = CardModule.CardValue
 type DeckLike = {
@@ -50,7 +51,12 @@ export type Hand = {
     pokerRankings: (self: Hand) -> PokerHandRanking?,
     buildAndSortRankMap: (self: Hand) -> {map: {[number]: {CardValue}}, keys: {number}},
     sameRank: (self: Hand, count: number, handType: PokerHandRanking) -> HandResult?,
-    checkHighCard: (self: Hand) -> boolean,
+
+    getHandResult: (self: Hand) -> HandResult,
+
+    -- Check cards
+    -- https://balatrowiki.org/w/Poker_hands
+    checkHighCard: (self: Hand) -> HandResult?,
     checkPair: (self: Hand) -> HandResult?,
     checkTwoPair: (self: Hand) -> HandResult?,
     checkThreeOfAKind: (self: Hand) -> HandResult?,
@@ -60,6 +66,8 @@ export type Hand = {
     checkFourOfAKind: (self: Hand) -> HandResult?,
     checkStraightFlush: (self: Hand) -> HandResult?,
     checkRoyalFlush: (self: Hand) -> HandResult?,
+
+    -- TODO: Implement secret hands 
 }
 
 function Hand.new(): Hand
@@ -184,6 +192,26 @@ function Hand.sameRank(self: Hand, count: number, handType: PokerHandRanking): H
         cards = validCards,
         handType = handType,
     }
+end
+
+function getHandResult(self: Hand): HandResult
+    local checks = {
+        self.checkRoyalFlush,
+        self.checkStraightFlush,
+        self.checkFourOfAKind,
+        self.checkFullHouse,
+        self.checkFlush,
+        self.checkStraight,
+        self.checkThreeOfAKind,
+        self.checkTwoPair,
+        self.checkPair,
+        self.checkHighCard,
+    }
+    for _, check in ipairs(checks) do
+        local result = check(self)
+        if result ~= nil then return result end
+    end
+    error("no hand match, this should never happen")
 end
 
 -- Start hand checking
@@ -330,8 +358,21 @@ function Hand.checkStraightFlush(self: Hand): HandResult?
 end
 
 function Hand.checkRoyalFlush(self: Hand): HandResult?
-    -- TODO
-    return self:checkStraight() and self.selectedHand[1].rank == 13 and self:checkFlush()
+    local cards = self:checkStraightFlush()
+    if cards == nil then
+        return nil
+    end
+    local hasAce = HighOrderFunctionsModule.arrayHasElement(cards.cards, function(card)
+        if card.display == "A" then return true
+        else return false end
+    end)
+
+    if hasAce then 
+        return {
+            cards = cards.cards, 
+            handType = PokerHandRankings.RoyalFlush
+        }
+    else return nil end
 end
 
 return Hand
