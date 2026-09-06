@@ -1,15 +1,31 @@
+--!strict
+local CardTypes = require("../Types")
+local PokerHands = require("../../deck/PokerHands")
+local JokerTypes = require("./Types")
+
 local SlyJoker = {}
 SlyJoker.__index = SlyJoker
 
-function SlyJoker.new()
+export type SlyJoker = typeof(setmetatable(
+    {} :: {
+        price: number,
+        rarity: CardTypes.Rarity,
+    },
+    SlyJoker
+))
+
+function SlyJoker.new(): SlyJoker
     return setmetatable({ price = 3, rarity = "Common" }, SlyJoker)
 end
 
-function SlyJoker:onHandEval(hand, score)
-    if hand:checkOnePair() then
-        return score + 50
+function SlyJoker.onHandScored(
+    _self: SlyJoker,
+    handResult: PokerHands.HandResult
+): JokerTypes.JokerEffect?
+    if PokerHands.contains(handResult.handType, PokerHands.Pair) then
+        return { kind = "AddChips", amount = 50 }
     end
-    return score
+    return nil
 end
 
 return SlyJoker

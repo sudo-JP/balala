@@ -1,15 +1,31 @@
+--!strict
+local CardTypes = require("../Types")
+local PokerHands = require("../../deck/PokerHands")
+local JokerTypes = require("./Types")
+
 local CrazyJoker = {}
 CrazyJoker.__index = CrazyJoker
 
-function CrazyJoker.new()
+export type CrazyJoker = typeof(setmetatable(
+    {} :: {
+        price: number,
+        rarity: CardTypes.Rarity,
+    },
+    CrazyJoker
+))
+
+function CrazyJoker.new(): CrazyJoker
     return setmetatable({ price = 4, rarity = "Common" }, CrazyJoker)
 end
 
-function CrazyJoker:onHandEval(hand, score)
-    if hand:checkStraight() then
-        return score + 12
+function CrazyJoker.onHandScored(
+    _self: CrazyJoker,
+    handResult: PokerHands.HandResult
+): JokerTypes.JokerEffect?
+    if PokerHands.contains(handResult.handType, PokerHands.Straight) then
+        return { kind = "AddMult", amount = 12 }
     end
-    return score
+    return nil
 end
 
 return CrazyJoker

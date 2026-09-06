@@ -1,15 +1,31 @@
+--!strict
+local CardTypes = require("../Types")
+local PokerHands = require("../../deck/PokerHands")
+local JokerTypes = require("./Types")
+
 local CleverJoker = {}
 CleverJoker.__index = CleverJoker
 
-function CleverJoker.new()
+export type CleverJoker = typeof(setmetatable(
+    {} :: {
+        price: number,
+        rarity: CardTypes.Rarity,
+    },
+    CleverJoker
+))
+
+function CleverJoker.new(): CleverJoker
     return setmetatable({ price = 4, rarity = "Common" }, CleverJoker)
 end
 
-function CleverJoker:onHandEval(hand, score)
-    if hand:checkTwoPair() then
-        return score + 80
+function CleverJoker.onHandScored(
+    _self: CleverJoker,
+    handResult: PokerHands.HandResult
+): JokerTypes.JokerEffect?
+    if PokerHands.contains(handResult.handType, PokerHands.TwoPair) then
+        return { kind = "AddChips", amount = 80 }
     end
-    return score
+    return nil
 end
 
 return CleverJoker

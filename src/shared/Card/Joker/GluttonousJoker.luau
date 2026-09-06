@@ -1,18 +1,33 @@
+--!strict
+local CardTypes = require("../Types")
+local PokerHands = require("../../deck/PokerHands")
+local JokerTypes = require("./Types")
+
 local GluttonousJoker = {}
 GluttonousJoker.__index = GluttonousJoker
 
-function GluttonousJoker.new()
+export type GluttonousJoker = typeof(setmetatable(
+    {} :: {
+        price: number,
+        rarity: CardTypes.Rarity,
+    },
+    GluttonousJoker
+))
+
+function GluttonousJoker.new(): GluttonousJoker
     return setmetatable({ price = 5, rarity = "Common" }, GluttonousJoker)
 end
 
-function GluttonousJoker:onHandEval(hand, score)
-    local cards = hand:getSelectedHand()
-    for _, val in ipairs(cards) do
-        if val.suit == "Club" then
-            score += 3
-        end
+function GluttonousJoker.onCardScored(
+    _self: GluttonousJoker,
+    _handResult: PokerHands.HandResult,
+    card: CardTypes.CardValue,
+    _cardIndex: number
+): JokerTypes.JokerEffect?
+    if card.suit == "Club" then
+        return { kind = "AddMult", amount = 3 }
     end
-    return score
+    return nil
 end
 
 return GluttonousJoker

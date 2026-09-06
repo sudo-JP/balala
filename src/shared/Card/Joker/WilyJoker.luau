@@ -1,15 +1,31 @@
+--!strict
+local CardTypes = require("../Types")
+local PokerHands = require("../../deck/PokerHands")
+local JokerTypes = require("./Types")
+
 local WilyJoker = {}
 WilyJoker.__index = WilyJoker
 
-function WilyJoker.new()
+export type WilyJoker = typeof(setmetatable(
+    {} :: {
+        price: number,
+        rarity: CardTypes.Rarity,
+    },
+    WilyJoker
+))
+
+function WilyJoker.new(): WilyJoker
     return setmetatable({ price = 4, rarity = "Common" }, WilyJoker)
 end
 
-function WilyJoker:onHandEval(hand, score)
-    if hand:checkThreeOfAKind() then
-        return score + 100
+function WilyJoker.onHandScored(
+    _self: WilyJoker,
+    handResult: PokerHands.HandResult
+): JokerTypes.JokerEffect?
+    if PokerHands.contains(handResult.handType, PokerHands.ThreeOfAKind) then
+        return { kind = "AddChips", amount = 100 }
     end
-    return score
+    return nil
 end
 
 return WilyJoker
