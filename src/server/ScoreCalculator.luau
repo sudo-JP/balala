@@ -1,21 +1,10 @@
 --!strict
 local PokerHands = require("@game/ReplicatedStorage/Shared/deck/PokerHands")
 local JokerTypes = require("@game/ReplicatedStorage/Shared/Card/Joker/Types")
+local PlayerGameState = require("../shared/Player/PlayerGameState")
 
 local ScoreCalculator = {}
 
-local BASE_HAND_SCORES: {[PokerHands.PokerHandType]: {chips: number, mult: number}} = {
-    HighCard = { chips = 5, mult = 1 },
-    Pair = { chips = 10, mult = 2 },
-    TwoPair = { chips = 20, mult = 2 },
-    ThreeOfAKind = { chips = 30, mult = 3 },
-    Straight = { chips = 30, mult = 4 },
-    Flush = { chips = 35, mult = 4 },
-    FullHouse = { chips = 40, mult = 4 },
-    FourOfAKind = { chips = 60, mult = 7 },
-    StraightFlush = { chips = 100, mult = 8 },
-    RoyalFlush = { chips = 100, mult = 8 },
-}
 
 type HandLike = {
     read getHandResult: (self: any) -> PokerHands.HandResult,
@@ -46,19 +35,25 @@ local function applyEffect(state: ScoreState, effect: JokerTypes.JokerEffect)
     end
 end
 
-function ScoreCalculator.calculateHand(hand: HandLike, jokers: {JokerTypes.Joker}): ScoreResult
+function ScoreCalculator.calculateHand(playerGameState: PlayerGameState): ScoreResult
+    local hand = playerGameState:getHand() 
     local handResult = hand:getHandResult()
-    local baseScore = BASE_HAND_SCORES[handResult.handType]
+
+    local baseScore = playerGameState.getCurrentScore(handResult.cards)
     local state: ScoreState = {
         chips = baseScore.chips,
         mult = baseScore.mult,
     }
     local effects: {JokerTypes.AppliedJokerEffect} = {}
+    local jokers = playerGameState:getJokers()
 
     for cardIndex, card in ipairs(handResult.cards) do
         state.chips += card.points
 
         for jokerIndex, joker in ipairs(jokers) do
+            -- TODO: emit effect UI here
+            -- For jokers that apply to specific card
+            -- i.e more mult if has spade
             local onCardScored = joker.onCardScored
             if onCardScored ~= nil then
                 local effect = onCardScored(joker, handResult, card, cardIndex)
@@ -75,6 +70,8 @@ function ScoreCalculator.calculateHand(hand: HandLike, jokers: {JokerTypes.Joker
         end
     end
 
+    -- For jokers that apply globally,
+    -- i.e hand has two pair
     for jokerIndex, joker in ipairs(jokers) do
         local onHandScored = joker.onHandScored
         if onHandScored ~= nil then

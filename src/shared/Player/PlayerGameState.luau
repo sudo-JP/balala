@@ -29,6 +29,18 @@ function PlayerGameState.new(builder)
     self.deckType = builder.deckType
 end
 
+function PlayerGameState.getHand(self: PlayerGameState) 
+    return self.hand
+end
+
+function PlayerGameState.getCurrentScore(self: PlayerGameState, key: string)
+    return self.pokerHandLevels[key]
+end
+
+function PlayerCardData.getJokers(self: PlaygerGameState)
+    return self.jokers
+end
+
 local PlayerStateBuilder = {}
 PlayerStateBuilder.__index = PlayerStateBuilder
 
@@ -40,6 +52,18 @@ function PlayerStateBuilder.new(player)
         discard = 3,       
         handSize = 8,
         deckType = player:getDeckType(),
+        pokerHandLevels = {
+            HighCard = { chips = 5, mult = 1 },
+            Pair = { chips = 10, mult = 2 },
+            TwoPair = { chips = 20, mult = 2 },
+            ThreeOfAKind = { chips = 30, mult = 3 },
+            Straight = { chips = 30, mult = 4 },
+            Flush = { chips = 35, mult = 4 },
+            FullHouse = { chips = 40, mult = 4 },
+            FourOfAKind = { chips = 60, mult = 7 },
+            StraightFlush = { chips = 100, mult = 8 },
+            RoyalFlush = { chips = 100, mult = 8 },
+        }
     }
     self.playerCardData = playerCardData
 
@@ -95,6 +119,9 @@ function PlayerStateBuilder:usePaintedDeck()
     self.deckConfigured = true
 end
 
+
 function PlayerStateBuilder:build()
     return PlayerStateBuilder.new(self)
 end
+
+return PlayerGameState
