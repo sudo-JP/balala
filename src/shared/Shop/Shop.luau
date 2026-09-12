@@ -1,18 +1,18 @@
+-- Shop module
 local Shop = {}
 Shop.__index = Shop
 
 function Shop.new()
-    local self = setmetatable(Shop, {})
+    local self = setmetatable({}, Shop)
     self.jokers = {}
     self.rerollableCards = {}
     self.anteVouchers = {}
     self.rerollPrice = 5
+    return self
 end
-
 
 function Shop:reroll()
     self.rerollPrice *= 0.2
-    --self.rerollableCards
 end
 
 function Shop:buyJoker(jokerIndex)
@@ -26,3 +26,7 @@ end
 function Shop:buyRerollableCards(cardIndex)
     return self.rerollableCards[cardIndex]
 end
+
+return Shop
+
+-- cache bust

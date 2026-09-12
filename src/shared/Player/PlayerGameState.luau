@@ -3,9 +3,10 @@ PlayerGameState.__index = PlayerGameState
 
 type PlayerCardData = {
     hand: number,
-    discard: number, 
+    discard: number,
     handSize: number,
     deckType: any,
+    pokerHandLevels: {[string]: {chips: number, mult: number}},
 }
 
 type PlayerInventoryData = {
@@ -17,27 +18,31 @@ type PlayerInventoryData = {
     consumeable: {any},
 }
 
-
 function PlayerGameState.new(builder)
     local self = setmetatable({}, PlayerGameState)
-    self.hand = builder.hand 
-    self.discard = builder.discard 
-    self.handSize = builder.handSize 
-    self.capital = builder.capital 
-    self.jokerSlotsSize = builder.jokerSlotsSize 
-    self.consumableSlotsSize = builder.consumableSlotsSize
-    self.deckType = builder.deckType
+    self.hand = builder.playerCardData.hand
+    self.discard = builder.playerCardData.discard
+    self.handSize = builder.playerCardData.handSize
+    self.capital = builder.playerInventoryData.capital
+    self.jokerSlotsSize = builder.playerInventoryData.jokerSlotsSize
+    self.consumableSlotsSize = builder.playerInventoryData.consumableSlotsSize
+    self.deckType = builder.playerCardData.deckType
+    self.pokerHandLevels = builder.playerCardData.pokerHandLevels
+    self.vouchers = builder.playerInventoryData.vouchers
+    self.jokers = builder.playerInventoryData.jokers
+    self.consumeable = builder.playerInventoryData.consumeable
+    return self
 end
 
-function PlayerGameState.getHand(self: PlayerGameState) 
+function PlayerGameState.getHand(self)
     return self.hand
 end
 
-function PlayerGameState.getCurrentScore(self: PlayerGameState, key: string)
+function PlayerGameState.getCurrentScore(self, key: string)
     return self.pokerHandLevels[key]
 end
 
-function PlayerCardData.getJokers(self: PlaygerGameState)
+function PlayerGameState.getJokers(self)
     return self.jokers
 end
 
@@ -121,7 +126,7 @@ end
 
 
 function PlayerStateBuilder:build()
-    return PlayerStateBuilder.new(self)
+    return PlayerGameState.new(self)
 end
 
 return PlayerGameState

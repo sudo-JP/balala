@@ -1,0 +1,8 @@
+# Handle line endings automatically for text files
+* text=auto
+
+# Explicitly declare text files you want to always use LF
+*.luau text eol=lf
+*.lua text eol=lf
+*.json text eol=lf
+*.md text eol=lf

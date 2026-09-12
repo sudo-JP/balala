@@ -1,6 +1,6 @@
 --!strict
-local CardModule = require("../Card/Types")
-local HighOrderFunctionsModule = require("../Utils")
+local CardModule = require(script.Parent.Parent.Card:FindFirstChild("Types"))
+local HighOrderFunctionsModule = require(script.Parent.Parent:FindFirstChild("Utils"))
 
 type CardValue = CardModule.CardValue
 type DeckLike = {
@@ -24,11 +24,6 @@ local PokerHandRankings = table.freeze({
     RoyalFlush = "RoyalFlush",
 })
 
-type HandResult = {
-    cards: {CardValue},
-    handType: PokerHandRanking, 
-}
-
 type PokerHandRanking = typeof(PokerHandRankings.HighCard)
     | typeof(PokerHandRankings.Pair)
     | typeof(PokerHandRankings.TwoPair)
@@ -39,6 +34,12 @@ type PokerHandRanking = typeof(PokerHandRankings.HighCard)
     | typeof(PokerHandRankings.FourOfAKind)
     | typeof(PokerHandRankings.StraightFlush)
     | typeof(PokerHandRankings.RoyalFlush)
+
+type HandResult = {
+    cards: {CardValue},
+    handType: PokerHandRanking,
+    playedCardCount: number,
+}
 
 export type Hand = {
     currentHand: {CardValue},
@@ -191,10 +192,11 @@ function Hand.sameRank(self: Hand, count: number, handType: PokerHandRanking): H
     return {
         cards = validCards,
         handType = handType,
+        playedCardCount = #self.selectedHand,
     }
 end
 
-function getHandResult(self: Hand): HandResult
+function Hand.getHandResult(self: Hand): HandResult
     local checks = {
         self.checkRoyalFlush,
         self.checkStraightFlush,
@@ -226,7 +228,7 @@ function Hand.checkHighCard(self: Hand): HandResult?
             maxPointCard = card
         end
     end
-    return {cards = {maxPointCard}, handType = PokerHandRankings.HighCard}
+    return {cards = {maxPointCard}, handType = PokerHandRankings.HighCard, playedCardCount = #self.selectedHand}
 end
 
 function Hand.checkPair(self: Hand): HandResult?
@@ -255,6 +257,7 @@ function Hand.checkTwoPair(self: Hand): HandResult?
     return {
         cards = validCards,
         handType = PokerHandRankings.TwoPair,
+        playedCardCount = #self.selectedHand,
     }
 end
 
@@ -262,9 +265,9 @@ function Hand.checkThreeOfAKind(self: Hand): HandResult?
     return self:sameRank(3, PokerHandRankings.ThreeOfAKind)
 end
 
-function Hand.checkStraight(self: Hand): boolean
+function Hand.checkStraight(self: Hand): HandResult?
     if #self.selectedHand ~= 5 then
-        return false
+        return nil
     end
 
     local ranks: {number} = {}
@@ -275,25 +278,25 @@ function Hand.checkStraight(self: Hand): boolean
 
     for index = 2, #ranks do
         if ranks[index] ~= ranks[index - 1] + 1 then
-            return false
+            return nil
         end
     end
 
-    return true
+    return {cards = self.selectedHand, handType = PokerHandRankings.Straight, playedCardCount = #self.selectedHand}
 end
 
-function Hand.checkFlush(self: Hand): boolean
+function Hand.checkFlush(self: Hand): HandResult?
     if #self.selectedHand ~= 5 then
-        return false
+        return nil
     end
 
     local suit = self.selectedHand[1].suit
     for _, value in ipairs(self.selectedHand) do
         if value.suit ~= suit then
-            return false
+            return nil
         end
     end
-    return true
+    return {cards = self.selectedHand, handType = PokerHandRankings.Flush, playedCardCount = #self.selectedHand}
 end
 
 function Hand.checkFullHouse(self: Hand): HandResult?
@@ -323,6 +326,7 @@ function Hand.checkFullHouse(self: Hand): HandResult?
     return {
         cards = validCards,
         handType = PokerHandRankings.FullHouse,
+        playedCardCount = #self.selectedHand,
     }
 end
 
@@ -331,29 +335,18 @@ function Hand.checkFourOfAKind(self: Hand): HandResult?
 end
 
 function Hand.checkStraightFlush(self: Hand): HandResult?
-    local straightCards = self:checkStraight()
-    local flushCards = self:checkFlush()
-    if straightCards == nil or flushCards == nil then
+    if #self.selectedHand ~= 5 then
         return nil
     end
-
-    local flushSet = {}
-    for _, card in flushCards.cards do
-        flushSet[card] = true
+    local isStraight = self:checkStraight()
+    local isFlush = self:checkFlush()
+    if isStraight == nil or isFlush == nil then
+        return nil
     end
-
-    local cards = {}
-    for _, card in straightCards.cards do
-        if flushSet[card] ~= nil then
-            table.insert(cards, card)
-        end
-
-    end
-    
-    
     return {
-        cards = cards,
-        handType = PokerHandRankings.StraightFlush
+        cards = self.selectedHand,
+        handType = PokerHandRankings.StraightFlush,
+        playedCardCount = #self.selectedHand,
     }
 end
 
@@ -370,7 +363,8 @@ function Hand.checkRoyalFlush(self: Hand): HandResult?
     if hasAce then 
         return {
             cards = cards.cards, 
-            handType = PokerHandRankings.RoyalFlush
+            handType = PokerHandRankings.RoyalFlush,
+            playedCardCount = #self.selectedHand,
         }
     else return nil end
 end

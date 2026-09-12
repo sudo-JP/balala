@@ -1,13 +1,13 @@
 --!strict
-local PokerHands = require("@game/ReplicatedStorage/Shared/deck/PokerHands")
-local JokerTypes = require("@game/ReplicatedStorage/Shared/Card/Joker/Types")
-local PlayerGameState = require("../shared/Player/PlayerGameState")
+local PokerHands = require(game.ReplicatedStorage.Shared.Deck:FindFirstChild("PokerHands"))
+local JokerTypes = require(game.ReplicatedStorage.Shared.Card.Joker:FindFirstChild("Types"))
+local PlayerGameState = require(game.ReplicatedStorage.Shared.Player:FindFirstChild("PlayerGameState"))
 
 local ScoreCalculator = {}
 
 
 type HandLike = {
-    read getHandResult: (self: any) -> PokerHands.HandResult,
+    getHandResult: (self: any) -> PokerHands.HandResult,
 }
 
 type ScoreState = {
@@ -39,7 +39,7 @@ function ScoreCalculator.calculateHand(playerGameState: PlayerGameState): ScoreR
     local hand = playerGameState:getHand() 
     local handResult = hand:getHandResult()
 
-    local baseScore = playerGameState.getCurrentScore(handResult.cards)
+    local baseScore = playerGameState:getCurrentScore(handResult.handType)
     local state: ScoreState = {
         chips = baseScore.chips,
         mult = baseScore.mult,

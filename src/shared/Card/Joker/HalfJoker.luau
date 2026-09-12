@@ -1,7 +1,7 @@
 --!strict
-local CardTypes = require("../Types")
-local PokerHands = require("../../deck/PokerHands")
-local JokerTypes = require("./Types")
+local CardTypes = require(script.Parent.Parent:FindFirstChild("Types"))
+local PokerHands = require(script.Parent.Parent.Parent.Deck:FindFirstChild("PokerHands"))
+local JokerTypes = require(script.Parent:FindFirstChild("Types"))
 
 local HalfJoker = {}
 HalfJoker.__index = HalfJoker

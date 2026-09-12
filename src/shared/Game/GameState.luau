@@ -6,6 +6,9 @@ function GameState.new(players, maxRound)
     self.currentRound = 1
     self.currentBlind = 300
     self.playerRanking = {}
+    return self
 end
+
+return GameState
 
 

@@ -1,7 +1,7 @@
 --!strict
-local Card = require("../Card")
-local CardTypes = require("../Card/Types")
-local inplaceRandomizeArray = require("../Utils")
+local Card = require(script.Parent.Parent.Card)
+local CardTypes = require(script.Parent.Parent.Card:FindFirstChild("Types"))
+local Utils = require(script.Parent.Parent:FindFirstChild("Utils"))
 
 type Suit = CardTypes.Suit
 type CardValue = CardTypes.CardValue
@@ -65,13 +65,13 @@ function Deck.new(): Deck
         end
     end
 
-    inplaceRandomizeArray(self.cards)
+    Utils.inplaceRandomizeArray(self.cards)
     return self
 end
 
 function Deck.drawCard(self: Deck): CardValue
     if self.currentCard == 0 then
-        fisherYates(self.cards)
+        Utils.inplaceRandomizeArray(self.cards)
         self.currentCard = self.numberOfCards
     end
 

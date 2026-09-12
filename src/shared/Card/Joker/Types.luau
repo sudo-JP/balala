@@ -1,6 +1,6 @@
 --!strict
-local CardTypes = require("../Types")
-local PokerHands = require("../../deck/PokerHands")
+local CardTypes = require(script.Parent.Parent:FindFirstChild("Types"))
+local PokerHands = require(script.Parent.Parent.Parent.Deck:FindFirstChild("PokerHands"))
 
 export type JokerEffectKind = "AddChips" | "AddMult" | "MultiplyMult"
 
@@ -35,13 +35,13 @@ export type OnHandScored = {
 export type Joker = {
     price: number,
     rarity: CardTypes.Rarity,
-    read onCardScored: ((
+    onCardScored: ((
         self: any,
         handResult: PokerHands.HandResult,
         card: CardTypes.CardValue,
         cardIndex: number
     ) -> JokerEffect?)?,
-    read onHandScored: ((
+    onHandScored: ((
         self: any,
         handResult: PokerHands.HandResult
     ) -> JokerEffect?)?,

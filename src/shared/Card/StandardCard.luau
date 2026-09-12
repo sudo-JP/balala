@@ -1,5 +1,5 @@
 --!strict
-local CardModule = require("./Types")
+local CardModule = require(script.Parent:FindFirstChild("Types"))
 
 type Suit = CardModule.Suit
 type CardValue = CardModule.CardValue

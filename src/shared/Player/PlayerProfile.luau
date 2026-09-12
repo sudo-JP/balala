@@ -5,4 +5,7 @@ function PlayerProfile.new(name)
     local self = setmetatable({}, PlayerProfile)
     self.name = name
     self.deckTypes = {}
+    return self
 end
+
+return PlayerProfile
