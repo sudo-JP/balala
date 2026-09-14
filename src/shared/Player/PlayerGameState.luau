@@ -1,3 +1,5 @@
+local Deck = require(game.ReplicatedStorage.Shared.Player:FindFirstChild("Deck"))
+
 local PlayerGameState = {}
 PlayerGameState.__index = PlayerGameState
 
@@ -18,11 +20,22 @@ type PlayerInventoryData = {
     consumeable: {any},
 }
 
+function PlayerGameState:drawMoreCards(self: PlayerGameState)
+    for i = 1, self.handSize - #self.currentHand do
+        table.insert(self.currentHand, self.deck:drawCard())
+    end
+end
+
 function PlayerGameState.new(builder)
     local self = setmetatable({}, PlayerGameState)
+    self.deck = Deck.new()
+    self.handSize = builder.playerCardData.handSize
+
+    self.currentHand = {}
+    self:drawMoreCards()
+
     self.hand = builder.playerCardData.hand
     self.discard = builder.playerCardData.discard
-    self.handSize = builder.playerCardData.handSize
     self.capital = builder.playerInventoryData.capital
     self.jokerSlotsSize = builder.playerInventoryData.jokerSlotsSize
     self.consumableSlotsSize = builder.playerInventoryData.consumableSlotsSize
