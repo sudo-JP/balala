@@ -4,7 +4,7 @@ local ScoreCalculator = require(game.ReplicatedStorage.Shared.Deck:FindFirstChil
 local PlayerProfile = require(game.ReplicatedStorage.Shared.Player:FindFirstChild("PlayerProfile"))
 local GameStateChanged = ReplicatedStorage.Remotes.GameStateChanged
 
-local Players = game:GetService("Players")
+
 
 local sessions: {[Player]: PlayerProfile} = {}
 
@@ -19,8 +19,7 @@ PlayHand.OnServerEvent:Connect(function(player, selectedIndices)
     local profile = sessions[player]
     local gameState = profile:getGameState()
 
-    local selectedHand = gameState:getSelectedHand()
-    local result = ScoreCalculator.calculateHand(selectedHand)
+    local result = ScoreCalculator.calculateHand(gameState)
 
     -- draw replacements
     gameState:drawMoreCards()
@@ -33,3 +32,20 @@ end)
 Players.PlayerRemoving:Connect(function(player)
     sessions[player] = nil
 end)
+
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = playerGui
+
+local indices = {}
+for i, card in ipairs(sessions[player]:getCards()) do
+    setmetatable(indices, { i = card})
+    local cardButton = Instance.new("Card " .. i)
+    cardButton.MouseButton1Click:connect(function()
+        sessions[player]:selectCard(i)
+    end)
+end

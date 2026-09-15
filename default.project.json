@@ -6,6 +6,15 @@
     "ReplicatedStorage": {
       "Shared": {
         "$path": "src/shared"
+      },
+      "Remotes": {
+        "$className": "Folder",
+        "PlayHand": {
+          "$className": "RemoteEvent"
+        },
+        "GameStateChanged": {
+          "$className": "RemoteEvent"
+        }
       }
     },
 
