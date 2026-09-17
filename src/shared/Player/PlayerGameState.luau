@@ -1,4 +1,5 @@
-local Deck = require(game.ReplicatedStorage.Shared.Player:FindFirstChild("Deck"))
+local Deck = require(game.ReplicatedStorage.Shared.Deck:FindFirstChild("Deck"))
+local Hand = require(game.ReplicatedStorage.Shared.Deck:FindFirstChild("Hand"))
 
 local PlayerGameState = {}
 PlayerGameState.__index = PlayerGameState
@@ -20,7 +21,7 @@ type PlayerInventoryData = {
     consumeable: {any},
 }
 
-function PlayerGameState:drawMoreCards(self: PlayerGameState)
+function PlayerGameState:drawMoreCards()
     for i = 1, self.handSize - #self.currentHand do
         table.insert(self.currentHand, self.deck:drawCard())
     end
@@ -48,7 +49,9 @@ function PlayerGameState.new(builder)
 end
 
 function PlayerGameState.getHand(self)
-    return self.hand
+    local hand = Hand.new()
+    hand.selectedHand = self.currentHand
+    return hand
 end
 
 function PlayerGameState.getCurrentScore(self, key: string)
@@ -57,6 +60,10 @@ end
 
 function PlayerGameState.getJokers(self)
     return self.jokers
+end
+
+function PlayerGameState.getCurrentHand(self)
+    return self.currentHand
 end
 
 local PlayerStateBuilder = {}
@@ -69,7 +76,7 @@ function PlayerStateBuilder.new(player)
         hand = 4,
         discard = 3,       
         handSize = 8,
-        deckType = player:getDeckType(),
+        deckType = if player then player:getDeckType() else nil,
         pokerHandLevels = {
             HighCard = { chips = 5, mult = 1 },
             Pair = { chips = 10, mult = 2 },
@@ -141,5 +148,7 @@ end
 function PlayerStateBuilder:build()
     return PlayerGameState.new(self)
 end
+
+PlayerGameState.PlayerStateBuilder = PlayerStateBuilder
 
 return PlayerGameState

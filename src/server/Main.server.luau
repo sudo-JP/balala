@@ -1,5 +1,5 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ScoreCalculator = require(script.Parent.ScoreCalc)
+local ScoreCalculator = require(script.Parent.ScoreCalculator)
 local PlayerProfile = require(game.ReplicatedStorage.Shared.Player:FindFirstChild("PlayerProfile"))
 local GameStateChanged = ReplicatedStorage.Remotes.GameStateChanged
 
@@ -13,7 +13,26 @@ Players.PlayerAdded:Connect(function(player)
     -- Save and init player
     local playerProfile = PlayerProfile.new(player.Name)
     sessions[player] = playerProfile
+
+    -- Send initial game state so the client can show the UI
+    local gameState = playerProfile:getGameState()
+    GameStateChanged:FireClient(player, {
+        score = nil,
+        hand = gameState:getCurrentHand()
+    })
 end)
+
+-- Handle players already in the game
+for _, player in Players:GetPlayers() do
+    local playerProfile = PlayerProfile.new(player.Name)
+    sessions[player] = playerProfile
+
+    local gameState = playerProfile:getGameState()
+    GameStateChanged:FireClient(player, {
+        score = nil,
+        hand = gameState:getCurrentHand()
+    })
+end
 
 PlayHand.OnServerEvent:Connect(function(player, selectedIndices)
     local profile = sessions[player]

@@ -18,9 +18,9 @@ export type Deck = {
 
 function Deck.new(): Deck
     local self: Deck = setmetatable({
-        numberOfCards = 52,
-        currentCard = 52,
-        cards = table.create(52) :: {CardValue},
+        numberOfCards = 48,
+        currentCard = 48,
+        cards = table.create(48) :: {CardValue},
     }, Deck) :: Deck
 
     local suits: {Suit} = {

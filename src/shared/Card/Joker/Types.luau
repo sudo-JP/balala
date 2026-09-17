@@ -1,6 +1,6 @@
 --!strict
 local CardTypes = require(script.Parent.Parent:FindFirstChild("Types"))
-local PokerHands = require(script.Parent.Parent.Parent.Deck:FindFirstChild("PokerHands"))
+local PokerHands = require(script.Parent.Parent.Parent.Deck:FindFirstChild("Hand"))
 
 export type JokerEffectKind = "AddChips" | "AddMult" | "MultiplyMult"
 
