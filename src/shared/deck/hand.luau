@@ -1,6 +1,5 @@
 --!strict
 local CardModule = require(script.Parent.Parent.Card:FindFirstChild("Types"))
-local HighOrderFunctionsModule = require(script.Parent.Parent:FindFirstChild("Utils"))
 
 type CardValue = CardModule.CardValue
 type DeckLike = {
@@ -150,13 +149,10 @@ function Hand.buildAndSortRankMap(self: Hand): {map: {[number]: {CardValue}}, ke
 
     for _, value in ipairs(self.selectedHand) do
         if map[value.rank] == nil then
+            map[value.rank] = {}
             table.insert(keys, value.rank)
         end
-        if map[value.rank] == nil then
-            map[value.rank] = {value}
-        else
-            table.insert(map[value.rank], value)
-        end
+        table.insert(map[value.rank], value)
     end
 
     table.sort(keys, function(a, b)
@@ -222,13 +218,13 @@ function Hand.checkHighCard(self: Hand): HandResult?
     if #self.selectedHand == 0 then 
         return nil 
     end
-    local maxPointCard = self.selectedHand[1]
+    local maxRankCard = self.selectedHand[1]
     for _, card in ipairs(self.selectedHand) do
-        if card.points > maxPointCard.points then
-            maxPointCard = card
+        if card.rank > maxRankCard.rank then
+            maxRankCard = card
         end
     end
-    return {cards = {maxPointCard}, handType = PokerHandRankings.HighCard, playedCardCount = #self.selectedHand}
+    return {cards = {maxRankCard}, handType = PokerHandRankings.HighCard, playedCardCount = #self.selectedHand}
 end
 
 function Hand.checkPair(self: Hand): HandResult?
@@ -275,6 +271,11 @@ function Hand.checkStraight(self: Hand): HandResult?
         table.insert(ranks, card.rank)
     end
     table.sort(ranks)
+
+    if ranks[1] == 2 and ranks[5] == 14 then
+        ranks[5] = 1
+        table.sort(ranks)
+    end
 
     for index = 2, #ranks do
         if ranks[index] ~= ranks[index - 1] + 1 then
@@ -351,22 +352,27 @@ function Hand.checkStraightFlush(self: Hand): HandResult?
 end
 
 function Hand.checkRoyalFlush(self: Hand): HandResult?
-    local cards = self:checkStraightFlush()
-    if cards == nil then
+    local sf = self:checkStraightFlush()
+    if sf == nil then
         return nil
     end
-    local hasAce = HighOrderFunctionsModule.arrayHasElement(cards.cards, function(card)
-        if card.display == "A" then return true
-        else return false end
-    end)
 
-    if hasAce then 
-        return {
-            cards = cards.cards, 
-            handType = PokerHandRankings.RoyalFlush,
-            playedCardCount = #self.selectedHand,
-        }
-    else return nil end
+    local minRank = sf.cards[1].rank
+    for _, card in ipairs(sf.cards) do
+        if card.rank < minRank then
+            minRank = card.rank
+        end
+    end
+
+    if minRank ~= 10 then
+        return nil
+    end
+
+    return {
+        cards = sf.cards,
+        handType = PokerHandRankings.RoyalFlush,
+        playedCardCount = #self.selectedHand,
+    }
 end
 
 return Hand
