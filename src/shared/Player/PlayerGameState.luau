@@ -1,5 +1,6 @@
 local Deck = require(game.ReplicatedStorage.Shared.Deck:FindFirstChild("Deck"))
 local Hand = require(game.ReplicatedStorage.Shared.Deck:FindFirstChild("Hand"))
+local Utils = require(game.ReplicatedStorage.Shared.FindFirstChild("Utils"))
 
 local PlayerGameState = {}
 PlayerGameState.__index = PlayerGameState
@@ -33,6 +34,7 @@ function PlayerGameState.new(builder)
     self.handSize = builder.playerCardData.handSize
 
     self.currentHand = {}
+    self.selectedCards = {}
     self:drawMoreCards()
 
     self.hand = builder.playerCardData.hand
@@ -48,10 +50,50 @@ function PlayerGameState.new(builder)
     return self
 end
 
+function PlayerGameState.setSelectedCards(self, indices: {number})
+    self.selectedCards = {}
+    for _, idx in ipairs(indices) do
+        local card = self.currentHand[idx]
+        if card then
+            table.insert(self.selectedCards, card)
+        end
+    end
+end
+
+function PlayerGameState.getSelectedCards(self)
+    return self.selectedCards
+end
+
 function PlayerGameState.getHand(self)
     local hand = Hand.new()
-    hand.selectedHand = self.currentHand
+    hand.selectedHand = self.selectedCards
     return hand
+end
+
+function PlayerGameState:removeSelectedHand(self: PlayerGameState)
+    local selectedSet = {}
+    for _, card in ipairs(self.selectedCards) do
+        selectedSet[card] = true
+    end
+    local newHand = {}
+    for _, card in ipairs(self.currentHand) do
+        if not selectedSet[card] then
+            table.insert(newHand, card)
+        end
+    end
+    self.currentHand = newHand
+end
+
+function PlayerGameState:discardSelectedHand(self: PlayerGameState)
+    self:removeSelectedHand()
+    self.discard -= 1
+end
+
+function PlayerGameState:playSelectedHand(self: PlayerGameState)
+    local selectedHand = self.selectedCards
+    self:removeSelectedHand()
+    self.hand -= 1
+    return selectedHand
 end
 
 function PlayerGameState.getCurrentScore(self, key: string)

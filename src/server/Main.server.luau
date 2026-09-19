@@ -36,11 +36,27 @@ end
 
 PlayHand.OnServerEvent:Connect(function(player, selectedIndices)
     local profile = sessions[player]
+    if not profile then
+        return
+    end
+
     local gameState = profile:getGameState()
 
+    -- validate client input
+    if typeof(selectedIndices) ~= "table" or #selectedIndices == 0 or #selectedIndices > 5 then
+        return
+    end
+
+    -- mark which cards the player selected from their hand
+    gameState:setSelectedCards(selectedIndices)
+
+    -- play the selected hand: removes selected cards from currentHand, decrements hands remaining
+    local selectedHand = gameState:playSelectedHand()
+
+    -- calculate the score for the played hand
     local result = ScoreCalculator.calculateHand(gameState)
 
-    -- draw replacements
+    -- draw replacement cards to refill the hand
     gameState:drawMoreCards()
 
     -- send result back to client
