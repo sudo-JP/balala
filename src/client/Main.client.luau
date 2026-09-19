@@ -5,27 +5,37 @@ local PlayHand = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("PlayHan
 local components = script.Parent.components
 local CardGameGui = require(components:FindFirstChild("CardGameGui"))
 local CardButton = require(components:FindFirstChild("CardButton"))
-local ActionButton = require(components:FindFirstChild("PlayHandButton"))
+local ActionButton = require(components:FindFirstChild("ActionButton"))
 local ScoreLabel = require(components:FindFirstChild("ScoreLabel"))
 
 GameStateChanged.OnClientEvent:Connect(function(result)
-    local screenGui = CardGameGui.new()
+    local screenGui = CardGameGui.CardGameGuiBuilder.new()
+        :build()
 
     local indices = {}
     for i, card in ipairs(result.hand) do
         indices[i] = false
-        CardButton.new(card.display .. "\n" .. card.suit, i, screenGui, function(selected)
-            indices[i] = selected
-        end)
+        CardButton.CardButtonBuilder.new(screenGui)
+            :withDisplay(card.display .. "\n" .. card.suit)
+            :withCardIndex(i)
+            :onClick(function(selected)
+                indices[i] = selected
+            end)
+            :build()
     end
 
-    ActionButton.new(screenGui, function()
-        PlayHand:FireServer(indices)
-    end, {
-        text = "Play Hand",
-    })
+    ActionButton.ActionButtonBuilder.new(screenGui)
+        :withText("Play Hand")
+        :onClick(function()
+            PlayHand:FireServer(indices)
+        end)
+        :build()
 
     if result.score then
-        ScoreLabel.new(screenGui, result.score.chips, result.score.mult, result.score.handResult.handType)
+        ScoreLabel.ScoreLabelBuilder.new(screenGui)
+            :withChips(result.score.chips)
+            :withMult(result.score.mult)
+            :withHandType(result.score.handResult.handType)
+            :build()
     end
 end)
