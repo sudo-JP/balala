@@ -1,6 +1,6 @@
 local Deck = require(game.ReplicatedStorage.Shared.Deck:FindFirstChild("Deck"))
 local Hand = require(game.ReplicatedStorage.Shared.Deck:FindFirstChild("Hand"))
-local Utils = require(game.ReplicatedStorage.Shared.FindFirstChild("Utils"))
+local Utils = require(game.ReplicatedStorage.Shared:FindFirstChild("Utils"))
 
 local PlayerGameState = {}
 PlayerGameState.__index = PlayerGameState
@@ -106,6 +106,14 @@ end
 
 function PlayerGameState.getCurrentHand(self)
     return self.currentHand
+end
+
+function PlayerGameState.getHandsLeft(self)
+    return self.hand
+end
+
+function PlayerGameState.getDiscardsLeft(self)
+    return self.discard
 end
 
 local PlayerStateBuilder = {}

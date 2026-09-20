@@ -5,6 +5,7 @@ local GameStateChanged = ReplicatedStorage.Remotes.GameStateChanged
 
 local Players = game:GetService("Players")
 local PlayHand = ReplicatedStorage.Remotes.PlayHand
+local DiscardHand = ReplicatedStorage.Remotes.DiscardHand
 
 local sessions: {[Player]: PlayerProfile} = {}
 
@@ -18,7 +19,9 @@ Players.PlayerAdded:Connect(function(player)
     local gameState = playerProfile:getGameState()
     GameStateChanged:FireClient(player, {
         score = nil,
-        hand = gameState:getCurrentHand()
+        hand = gameState:getCurrentHand(),
+        handsLeft = gameState:getHandsLeft(),
+        discardsLeft = gameState:getDiscardsLeft(),
     })
 end)
 
@@ -30,7 +33,9 @@ for _, player in Players:GetPlayers() do
     local gameState = playerProfile:getGameState()
     GameStateChanged:FireClient(player, {
         score = nil,
-        hand = gameState:getCurrentHand()
+        hand = gameState:getCurrentHand(),
+        handsLeft = gameState:getHandsLeft(),
+        discardsLeft = gameState:getDiscardsLeft(),
     })
 end
 
@@ -62,7 +67,43 @@ PlayHand.OnServerEvent:Connect(function(player, selectedIndices)
     -- send result back to client
     GameStateChanged:FireClient(player, {
         score = result,
-        hand = gameState:getCurrentHand()
+        hand = gameState:getCurrentHand(),
+        handsLeft = gameState:getHandsLeft(),
+        discardsLeft = gameState:getDiscardsLeft(),
+    })
+end)
+
+DiscardHand.OnServerEvent:Connect(function(player, selectedIndices)
+    local profile = sessions[player]
+    if not profile then
+        return
+    end
+
+    local gameState = profile:getGameState()
+
+    -- validate client input
+    if typeof(selectedIndices) ~= "table" or #selectedIndices == 0 or #selectedIndices > 5 then
+        return
+    end
+
+    -- check if discards are available
+    if gameState:getDiscardsLeft() <= 0 then
+        return
+    end
+
+    -- mark which cards the player selected from their hand
+    gameState:setSelectedCards(selectedIndices)
+
+    -- discard selected cards and draw replacements
+    gameState:discardSelectedHand()
+    gameState:drawMoreCards()
+
+    -- send updated state to client (no score on discard)
+    GameStateChanged:FireClient(player, {
+        score = nil,
+        hand = gameState:getCurrentHand(),
+        handsLeft = gameState:getHandsLeft(),
+        discardsLeft = gameState:getDiscardsLeft(),
     })
 end)
 
