@@ -24,13 +24,22 @@ GameStateChanged.OnClientEvent:Connect(function(result)
         :build()
 
     local indices = {}
+    local selectedCount = 0
     for i, card in ipairs(result.hand) do
         indices[i] = false
         CardButton.CardButtonBuilder.new(screenGui)
             :withDisplay(card.display .. "\n" .. card.suit)
             :withCardIndex(i)
             :onClick(function(selected)
+                if selected then
+                    selectedCount += 1
+                else
+                    selectedCount -= 1
+                end
                 indices[i] = selected
+            end)
+            :canSelect(function()
+                return selectedCount < 5
             end)
             :build()
     end

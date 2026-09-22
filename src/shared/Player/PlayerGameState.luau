@@ -70,7 +70,7 @@ function PlayerGameState.getHand(self)
     return hand
 end
 
-function PlayerGameState:removeSelectedHand(self: PlayerGameState)
+function PlayerGameState:removeSelectedHand()
     local selectedSet = {}
     for _, card in ipairs(self.selectedCards) do
         selectedSet[card] = true
@@ -84,12 +84,12 @@ function PlayerGameState:removeSelectedHand(self: PlayerGameState)
     self.currentHand = newHand
 end
 
-function PlayerGameState:discardSelectedHand(self: PlayerGameState)
+function PlayerGameState:discardSelectedHand()
     self:removeSelectedHand()
     self.discard -= 1
 end
 
-function PlayerGameState:playSelectedHand(self: PlayerGameState)
+function PlayerGameState:playSelectedHand()
     local selectedHand = self.selectedCards
     self:removeSelectedHand()
     self.hand -= 1

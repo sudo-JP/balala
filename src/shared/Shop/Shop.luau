@@ -12,7 +12,7 @@ function Shop.new()
 end
 
 function Shop:reroll()
-    self.rerollPrice *= 0.2
+    self.rerollPrice += 1
 end
 
 function Shop:buyJoker(jokerIndex)

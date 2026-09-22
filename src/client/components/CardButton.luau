@@ -15,6 +15,9 @@ function CardButton.new(builder): TextButton
 
     local selected = false
     button.MouseButton1Click:Connect(function()
+        if not selected and builder.canSelect and not builder.canSelect() then
+            return
+        end
         selected = not selected
         button.BackgroundColor3 = selected and builder.selectedColor or builder.defaultColor
         if builder.onClick then
@@ -39,6 +42,7 @@ function CardButtonBuilder.new(parent: Instance)
     self.defaultColor = Color3.fromRGB(255, 255, 255)
     self.textColor3 = Color3.fromRGB(0, 0, 0)
     self.onClick = nil
+    self.canSelect = nil
     return self
 end
 
@@ -80,6 +84,11 @@ end
 
 function CardButtonBuilder:onClick(callback: (selected: boolean) -> ())
     self.onClick = callback
+    return self
+end
+
+function CardButtonBuilder:canSelect(callback: () -> boolean)
+    self.canSelect = callback
     return self
 end
 
