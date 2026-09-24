@@ -8,14 +8,14 @@
 * [x] 6: Jolly Joker — Common — $3
 * [x] 7: Zany Joker — Common — $4
 * [x] 8: Mad Joker — Common — $4
-* [ ] 9: Crazy Joker — Common — $4
-* [ ] 10: Droll Joker — Common — $4
-* [ ] 11: Sly Joker — Common — $3
-* [ ] 12: Wily Joker — Common — $4
-* [ ] 13: Clever Joker — Common — $4
-* [ ] 14: Devious Joker — Common — $4
-* [ ] 15: Crafty Joker — Common — $4
-* [ ] 16: Half Joker — Common — $5
+* [x] 9: Crazy Joker — Common — $4
+* [x] 10: Droll Joker — Common — $4
+* [x] 11: Sly Joker — Common — $3
+* [x] 12: Wily Joker — Common — $4
+* [x] 13: Clever Joker — Common — $4
+* [x] 14: Devious Joker — Common — $4
+* [x] 15: Crafty Joker — Common — $4
+* [x] 16: Half Joker — Common — $5
 * [ ] 17: Joker Stencil — Uncommon — $8
 * [ ] 18: Four Fingers — Uncommon — $7
 * [ ] 19: Mime — Uncommon — $5
