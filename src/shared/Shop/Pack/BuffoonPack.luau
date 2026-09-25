@@ -17,6 +17,11 @@ local CleverJoker = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChil
 local DeviousJoker = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("DeviousJoker"))
 local CraftyJoker = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("CraftyJoker"))
 local HalfJoker = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("HalfJoker"))
+local Fibonacci = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("Fibonacci"))
+local ScaryFace = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("ScaryFace"))
+local EvenSteven = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("EvenSteven"))
+local OddTodd = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("OddTodd"))
+local Scholar = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("Scholar"))
 
 local BuffoonPack = {}
 BuffoonPack.__index = BuffoonPack
@@ -40,6 +45,11 @@ function BuffoonPack.new(): BuffoonPack
             DeviousJoker,     
             CraftyJoker,     
             HalfJoker,      
+            Fibonacci,
+            ScaryFace,
+            EvenSteven,
+            OddTodd,
+            Scholar,
         }
     }, BuffoonPack)
 end
