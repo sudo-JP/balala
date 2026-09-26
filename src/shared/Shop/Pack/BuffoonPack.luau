@@ -22,6 +22,11 @@ local ScaryFace = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild(
 local EvenSteven = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("EvenSteven"))
 local OddTodd = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("OddTodd"))
 local Scholar = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("Scholar"))
+local Hack = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("Hack"))
+local Blackboard = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("Blackboard"))
+local Photograph = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("Photograph"))
+local SmileyFace = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("SmileyFace"))
+local RaisedFist = require(script.Parent.Parent.Parent.Card.Joker:FindFirstChild("RaisedFist"))
 
 local BuffoonPack = {}
 BuffoonPack.__index = BuffoonPack
@@ -50,6 +55,11 @@ function BuffoonPack.new(): BuffoonPack
             EvenSteven,
             OddTodd,
             Scholar,
+            Hack,
+            Blackboard,
+            Photograph,
+            SmileyFace,
+            RaisedFist,
         }
     }, BuffoonPack)
 end

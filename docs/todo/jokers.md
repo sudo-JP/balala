@@ -28,26 +28,26 @@
 * [ ] 26: 8 Ball — Common — $5
 * [ ] 27: Misprint — Common — $4
 * [ ] 28: Dusk — Uncommon — $5
-* [ ] 29: Raised Fist — Common — $5
+* [x] 29: Raised Fist — Common — $5
 * [ ] 30: Chaos the Clown — Common — $4
-* [ ] 31: Fibonacci — Uncommon — $8
+* [x] 31: Fibonacci — Uncommon — $8
 * [ ] 32: Steel Joker — Uncommon — $7
-* [ ] 33: Scary Face — Common — $4
+* [x] 33: Scary Face — Common — $4
 * [ ] 34: Abstract Joker — Common — $4
 * [ ] 35: Delayed Gratification — Common — $4
-* [ ] 36: Hack — Uncommon — $6
+* [x] 36: Hack — Uncommon — $6
 * [ ] 37: Pareidolia — Uncommon — $5
 * [ ] 38: Gros Michel — Common — $5
-* [ ] 39: Even Steven — Common — $4
-* [ ] 40: Odd Todd — Common — $4
-* [ ] 41: Scholar — Common — $4
+* [x] 39: Even Steven — Common — $4
+* [x] 40: Odd Todd — Common — $4
+* [x] 41: Scholar — Common — $4
 * [ ] 42: Business Card — Common — $4
 * [ ] 43: Supernova — Common — $5
 * [ ] 44: Ride the Bus — Common — $6
 * [ ] 45: Space Joker — Uncommon — $5
 * [ ] 46: Egg — Common — $4
 * [ ] 47: Burglar — Uncommon — $6
-* [ ] 48: Blackboard — Uncommon — $6
+* [x] 48: Blackboard — Uncommon — $6
 * [ ] 49: Runner — Common — $5
 * [ ] 50: Ice Cream — Common — $5
 * [ ] 51: DNA — Rare — $8
@@ -77,7 +77,7 @@
 * [ ] 75: Obelisk — Rare — $8
 * [ ] 76: Midas Mask — Uncommon — $7
 * [ ] 77: Luchador — Uncommon — $5
-* [ ] 78: Photograph — Common — $5
+* [x] 78: Photograph — Common — $5
 * [ ] 79: Gift Card — Uncommon — $6
 * [ ] 80: Turtle Bean — Uncommon — $6
 * [ ] 81: Erosion — Uncommon — $6
@@ -103,7 +103,7 @@
 * [ ] 101: Walkie Talkie — Common — $4
 * [ ] 102: Seltzer — Uncommon — $6
 * [ ] 103: Castle — Uncommon — $6
-* [ ] 104: Smiley Face — Common — $4
+* [x] 104: Smiley Face — Common — $4
 * [ ] 105: Campfire — Rare — $9
 * [ ] 106: Golden Ticket — Common — $5
 * [ ] 107: Mr. Bones — Uncommon — $5
